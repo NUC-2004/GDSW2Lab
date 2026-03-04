@@ -7,22 +7,41 @@ public class GoombaController : MonoBehaviour
 
     [Header("Detection")]
     public Transform wallCheck;
-    public Transform edgeCheck;
     public LayerMask groundLayer;
     public float checkRadius = 0.1f;
 
+    [Header("Activation")]
+    public float activationDistance = 15f;
+    private Transform player;
+    private bool isActivated = false;
+
     private Rigidbody2D rb;
+    private Animator anim;
     private bool isDead = false;
     private bool movingRight = false;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>();
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (playerObj != null)
+            player = playerObj.transform;
     }
 
     void Update()
     {
         if (isDead) return;
+
+        // Only activate when player is nearby
+        if (!isActivated)
+        {
+            if (player != null && Vector2.Distance(
+                transform.position, player.position) < activationDistance)
+                isActivated = true;
+            else
+                return;
+        }
 
         // Patrol left and right
         rb.linearVelocity = new Vector2(
@@ -34,8 +53,6 @@ public class GoombaController : MonoBehaviour
         bool hitWall = Physics2D.OverlapCircle(
             wallCheck.position, checkRadius, groundLayer
         );
-
-
 
         if (hitWall)
         {
@@ -58,12 +75,11 @@ public class GoombaController : MonoBehaviour
         if (col.gameObject.CompareTag("Player"))
         {
             bool stompedFromAbove =
-                col.transform.position.y > transform.position.y + 0.2f;
+                col.transform.position.y > transform.position.y + 0.1f;
 
             if (stompedFromAbove)
             {
                 GetStomped();
-                // Bounce player up after stomp
                 Rigidbody2D playerRb =
                     col.gameObject.GetComponent<Rigidbody2D>();
                 if (playerRb != null)
@@ -73,7 +89,6 @@ public class GoombaController : MonoBehaviour
             }
             else
             {
-                // Player takes damage
                 col.gameObject.SendMessage("TakeDamage",
                     SendMessageOptions.DontRequireReceiver);
             }
@@ -85,7 +100,9 @@ public class GoombaController : MonoBehaviour
         isDead = true;
         rb.linearVelocity = Vector2.zero;
         rb.isKinematic = true;
+        if (anim != null)
+            anim.SetTrigger("Die");
         GetComponent<Collider2D>().enabled = false;
-        Destroy(gameObject, 0.3f);
+        Destroy(gameObject, 0.5f);
     }
 }
