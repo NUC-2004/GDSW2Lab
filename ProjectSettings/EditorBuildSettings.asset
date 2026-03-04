@@ -12,7 +12,7 @@ EditorBuildSettings:
     path: Assets/Scenes/UndergroundRoom.unity
     guid: 20c4d900951a4f042b0a0696bc4a921c
   - enabled: 1
-    path: Assets/Scenes/Main.unity
+    path: Assets/Scenes/MainMap.unity
     guid: 33114bfb674762647863f4abb4235a17
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}

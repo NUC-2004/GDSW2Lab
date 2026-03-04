@@ -35,12 +35,9 @@ public class GoombaController : MonoBehaviour
             wallCheck.position, checkRadius, groundLayer
         );
 
-        // Check for edge
-        bool noGround = !Physics2D.OverlapCircle(
-            edgeCheck.position, checkRadius, groundLayer
-        );
 
-        if (hitWall || noGround)
+
+        if (hitWall)
         {
             Flip();
         }
